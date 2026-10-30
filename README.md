@@ -1,1 +1,1 @@
-# leanscope-agent-kit-angular-quickstart
+# LeanScope Agent Kit – Quickstart for Angular Devs
