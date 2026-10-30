@@ -8,10 +8,8 @@ import { answerFields, toAnswer, type AnswerField } from '../answer-fields';
   selector: 'ls-pending-step-form',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule],
+  // The question itself is the persona's last message, which the transcript already shows.
   template: `
-    @if (question().question; as text) {
-      <p class="question">{{ text }}</p>
-    }
     <form [formGroup]="form()" (ngSubmit)="send()">
       @for (field of fields(); track field.key) {
         <label class="field" [class.inline]="field.kind === 'boolean'">
@@ -71,11 +69,6 @@ import { answerFields, toAnswer, type AnswerField } from '../answer-fields';
       padding: 1rem;
       border-radius: 0.75rem;
       background: var(--ls-surface);
-    }
-    .question {
-      margin: 0 0 0.75rem;
-      font-weight: 600;
-      white-space: pre-wrap;
     }
     form {
       display: flex;

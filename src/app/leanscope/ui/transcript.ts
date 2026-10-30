@@ -74,13 +74,28 @@ export class Transcript {
   );
 }
 
-/** A user step's line is the submitted answer as JSON; show it as text. */
-function answerText(line: string): string {
+/**
+ * A user step's line is the submitted answer as JSON, either plain (`{"message":"…"}`) or wrapped
+ * by the server as `{"kind":"review","schema":{…},"data":{…}}`. Shows only the answer, as text;
+ * a picked choice shows its title instead of its value.
+ */
+export function answerText(line: string): string {
   try {
-    const answer = JSON.parse(line) as unknown;
-    if (answer && typeof answer === 'object' && !Array.isArray(answer)) {
-      const entries = Object.entries(answer as Record<string, unknown>);
-      if (entries.length === 1 && entries[0][0] === 'message') return String(entries[0][1]);
+    let answer = JSON.parse(line) as unknown;
+    let titles: Record<string, Record<string, string>> = {};
+    if (isRecord(answer) && isRecord(answer['data']) && 'schema' in answer) {
+      titles = choiceTitles(answer['schema']);
+      answer = answer['data'];
+    }
+    if (isRecord(answer)) {
+      const entries = Object.entries(answer).map(
+        ([key, value]) => [key, titles[key]?.[String(value)] ?? value] as const,
+      );
+      // One field (a message, a picked choice): just its value.
+      if (entries.length === 1) {
+        const [, value] = entries[0];
+        return (typeof value === 'string' ? value : JSON.stringify(value)).trim();
+      }
       return entries
         .map(
           ([key, value]) => `${key}: ${typeof value === 'string' ? value : JSON.stringify(value)}`,
@@ -91,4 +106,23 @@ function answerText(line: string): string {
   } catch {
     return line;
   }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === 'object' && !Array.isArray(value);
+}
+
+/** For each choice field of a schema: value → title (from `oneOf: [{ const, title }]`). */
+function choiceTitles(schema: unknown): Record<string, Record<string, string>> {
+  const properties = isRecord(schema) && isRecord(schema['properties']) ? schema['properties'] : {};
+  const titles: Record<string, Record<string, string>> = {};
+  for (const [key, property] of Object.entries(properties)) {
+    const options = isRecord(property) && Array.isArray(property['oneOf']) ? property['oneOf'] : [];
+    for (const option of options) {
+      if (isRecord(option) && 'const' in option && typeof option['title'] === 'string') {
+        (titles[key] ??= {})[String(option['const'])] = option['title'];
+      }
+    }
+  }
+  return titles;
 }

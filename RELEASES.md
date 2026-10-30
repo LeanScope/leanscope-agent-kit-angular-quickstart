@@ -1,5 +1,12 @@
 # Release notes
 
+## 0.1.1 — 2026-10-30
+
+- **The question is no longer shown twice.** The answer form shows only the input; the question is
+  the persona's last message in the conversation above it.
+- **Your answers read as text.** The conversation unwraps the server's answer envelope
+  (`kind` / `schema` / `data`) and shows just what you wrote; a picked choice shows its label.
+
 ## 0.1.0 — 2026-10-30
 
 The first version of the template: fork it to build an Angular MVP on a LeanScope choreo.

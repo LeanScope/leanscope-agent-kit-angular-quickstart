@@ -12,7 +12,7 @@ describe('PendingStepForm', () => {
     return { fixture, el: fixture.nativeElement as HTMLElement, answers };
   }
 
-  it('shows the question and sends a plain-text answer', async () => {
+  it('sends a plain-text answer and leaves the question to the transcript', async () => {
     const { fixture, el, answers } = await render({
       guid: 'h1',
       question: 'What is your name?',
@@ -20,7 +20,7 @@ describe('PendingStepForm', () => {
       fieldKeys: ['message'],
       required: ['message'],
     });
-    expect(el.querySelector('.question')?.textContent).toContain('What is your name?');
+    expect(el.textContent).not.toContain('What is your name?');
 
     const button = el.querySelector('button') as HTMLButtonElement;
     expect(button.disabled).toBe(true);
