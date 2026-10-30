@@ -313,11 +313,11 @@ async function createErrorMessage(res: Response): Promise<string> {
   switch (res.status) {
     case 401:
     case 403:
-      return `LeanScope did not accept the access token (${res.status}). Check accessToken in src/environments/environment.local.ts. ${detail}`;
+      return `LeanScope did not accept the access token (${res.status}). Check LEANSCOPE_PERSONAL_TEAM_REPOS_ACCESS_TOKEN in .env. ${detail}`;
     case 404:
       return `The choreo was not found (404). Check choreoScenarioGuid in src/environments/environment.ts. ${detail}`;
     case 422:
-      return `The agent server needs your own LLM key (422). Add an OpenAI, Anthropic or Mistral key to src/environments/environment.local.ts. ${detail}`;
+      return `The agent server needs your own LLM key (422). Add an OpenAI, Anthropic or Mistral key to .env. ${detail}`;
     default:
       return `Could not create the session (${res.status}). ${detail}`;
   }

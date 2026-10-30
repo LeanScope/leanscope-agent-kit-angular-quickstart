@@ -1,6 +1,10 @@
 @AGENTS.md
 
-## Spelling: LeanScope
+## Versioning
+- Change the version number in this project's (leanscope-agent-kit-angular-quickstart) package.json after each session (only in case there was a commit in between!). For minor things (fixes and mini enhancements), increase the third number, for major update that lead to a committed plan change the second number. The first number I will change manually, as it stands for major upGrades, not majore upDates.
+- Track all major updates and upgrades in a RELEASES.md release notes file.
+
+## Spelling
 
 Always write **LeanScope** with a capital L and a capital S: in prose, comments, UI text and in
 PascalCase or camelCase identifiers (`LeanScopeConfig`, `LeanScopeSessionService`,

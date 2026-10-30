@@ -158,6 +158,6 @@ describe('LeanScopeSessionService', () => {
     await service.start();
     expect(server.fetchFn).not.toHaveBeenCalled();
     expect(service.state()).toBe('error');
-    expect(service.error()).toContain('accessToken');
+    expect(service.error()).toContain('LEANSCOPE_PERSONAL_TEAM_REPOS_ACCESS_TOKEN');
   });
 });

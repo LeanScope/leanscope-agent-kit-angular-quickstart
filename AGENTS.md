@@ -28,8 +28,8 @@ you're on.
 2. **Pick the choreo.** List the choreos in the repository and let the user pick one, or create one
    with the `model-a-choreo` skill when the user describes a new use case.
 3. **Configure the app.** Write the choreo's `_guid` into `choreoScenarioGuid` in
-   `src/environments/environment.ts`. Ask the user to put their token and an LLM key into
-   `src/environments/environment.local.ts` themselves (see "Secrets").
+   `src/environments/environment.ts`. Ask the user to copy `.env.example` to `.env` and fill in
+   their token and an LLM key themselves (see "Secrets").
 4. **Test-run it.** Run the choreo once with the `run-a-choreo` skill, so you and the user know
    what it asks and in which order before building screens.
 5. **Plan the MVP.** Read the Scenario, its ScenarioSteps, Personas and UserStories through
@@ -45,10 +45,16 @@ you're on.
 
 ## Secrets
 
-- Never open, read, print or edit `src/environments/environment.local.ts` or any `.env` file, not
-  even to check a value. The user enters the token and keys there. If you need to know whether
-  they're set, ask the user, or start the app and look at the home page, which lists what's missing.
-- Never commit these files. `.gitignore` already excludes them.
+- The user's secrets live in `.env` only (names in `.env.example`). Never open, read, print or edit
+  `.env`, not even to check a value. If you need to know which names are set, run
+  `node scripts/sync-env.mjs`: it lists names, never values. The home page of the running app also
+  lists what's missing.
+- `npm start` and `npm run build` pass the secrets to Angular at build time
+  (`LEANSCOPE_SECRETS` in `src/environments/environment.ts`). Don't add another way to load them.
+- Your own MCP servers get the same secrets when the user runs `npm run connect:claude`. If the
+  `leanscope-*` servers reject the token, ask the user to fix `.env`, run that command and start a
+  new session. Never ask them to paste a token into the chat.
+- Never commit `.env`. `.gitignore` already excludes it.
 - Never put a token or key into `environment.ts`, a component, a test or a commit message.
 - The token and keys end up in the browser bundle. This is fine for local development only. If the
   user wants to deploy, tell them a small backend has to hold the secrets and create the sessions

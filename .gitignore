@@ -43,8 +43,7 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 
-# LeanScope secrets (see src/environments/environment.local.example.ts)
-/src/environments/environment.local.ts
+# LeanScope secrets (see .env.example)
 .env
 .env.*
 !.env.example

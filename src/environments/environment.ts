@@ -1,10 +1,19 @@
-// App configuration that is safe to commit. Secrets live in `environment.local.ts` (gitignored).
+// App configuration that is safe to commit. Secrets live in `.env` (gitignored, see `.env.example`).
 //
 // Coding agents: you may edit this file, e.g. to set `choreoScenarioGuid`. Never open, print or
-// edit `environment.local.ts`.
+// edit `.env`.
 
-import type { LeanScopeConfig } from '../app/leanscope/leanscope.config';
-import { localSecrets } from './environment.local';
+import type { LeanScopeConfig, LeanScopeSecrets } from '../app/leanscope/leanscope.config';
+
+/**
+ * Your secrets from `.env`. `npm start` and `npm run build` put them in at build time (see
+ * scripts/run-ng.mjs); in tests and plain `ng` commands they are undefined, so the app starts
+ * with empty values and the home page lists what's missing.
+ */
+declare const LEANSCOPE_SECRETS: LeanScopeSecrets | undefined;
+
+const secrets: LeanScopeSecrets =
+  typeof LEANSCOPE_SECRETS === 'undefined' ? { accessToken: '', apiKeys: {} } : LEANSCOPE_SECRETS;
 
 export const environment: { leanscope: LeanScopeConfig } = {
   leanscope: {
@@ -17,6 +26,6 @@ export const environment: { leanscope: LeanScopeConfig } = {
     /** Language the session speaks, e.g. 'en' or 'de'. */
     locale: 'en',
 
-    ...localSecrets,
+    ...secrets,
   },
 };

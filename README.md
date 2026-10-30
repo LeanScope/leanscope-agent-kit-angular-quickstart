@@ -31,18 +31,17 @@ conversation and renders a form for each question. Your MVP screens go on top of
 
 1. **Create your copy:** click **Use this template** on GitHub (or fork), then clone it.
 2. **Install:** `npm install`
-3. **Connect your coding agent.** Open the folder in Claude Code (CLI or the VS Code extension).
+3. **Put your secrets into `.env`.** Copy `.env.example` to `.env` and fill in the token and an
+   LLM key yourself, not through the agent. `.env` is gitignored and is the one place for them:
+   both the app and the coding agent's MCP servers use it.
+4. **Connect your coding agent.** Open the folder in Claude Code (CLI or the VS Code extension).
    `.claude/settings.json` enables the Agent Kit plugin.
-   - Accept the plugin install when the session starts. Claude Code asks for the token and keys
-     and keeps them in your OS keychain.
+   - Accept the plugin install when the session starts. (If it asks for the token, you can leave
+     the fields empty: the next step fills them.)
+   - Run `npm run connect:claude`. It stores the values from `.env` in the plugin's settings (your
+     OS keychain) without printing them. Run it again whenever you change `.env`.
    - Start a new session. `/mcp` should now list `leanscope-admin`, `leanscope-graphql` and
-     `leanscope-agents`.
-4. **Give the app your secrets.** `npm start` creates `src/environments/environment.local.ts` from
-   the example. Put your token and LLM key there yourself, not through the agent:
-   ```ts
-   accessToken: '<your LeanScope token>',
-   apiKeys: { openai: '<your key>', anthropic: '', mistral: '', elevenlabs: '', typesafe: '' },
-   ```
+     `leanscope-agents`, all connected.
 5. **Ask your agent:**
    > Set up LeanScope in this project and help me build an MVP for my choreo.
 
@@ -52,16 +51,18 @@ conversation and renders a form for each question. Your MVP screens go on top of
    3. test-run it
    4. propose screens
    5. build them
-6. **Run:** `npm start`, then open http://localhost:4200 and click **Start session**.
+6. **Run:** `npm start`, then open http://localhost:4200 and click **Start session**. Saving `.env`
+   while it runs restarts the dev server with the new values.
 
 ## Project layout
 
 ```
+.env.example                   names of your secrets; copy to .env (gitignored) and fill in
 .claude/settings.json          enables the LeanScope Agent Kit plugin for Claude Code
 AGENTS.md, CLAUDE.md           instructions and workflow for coding agents
 src/environments/
-  environment.ts               agent server URL, choreo guid, locale (committed)
-  environment.local.ts         your token and LLM keys (gitignored, created on first start)
+  environment.ts               agent server URL, choreo guid, locale (committed); secrets from
+                               .env are added at build time
 src/app/leanscope/             the LeanScope client: keep it generic
   leanscope-session.service.ts   start a session, follow it, answer questions (signals)
   agent-server.types.ts          request/response and frame types of the Agent Server
@@ -101,10 +102,11 @@ handle (`inventory`, `tool_activity`, `tts_audio`, …). The full API is in the
 | `npm start` | Dev server on http://localhost:4200 |
 | `npm test -- --watch=false` | Unit tests (Vitest) |
 | `npm run build` | Production build into `dist/` |
+| `npm run connect:claude` | Stores the secrets from `.env` in the Agent Kit plugin in Claude Code |
 
 ## Security: development only
 
-The token and LLM keys in `environment.local.ts` are compiled into the JavaScript the browser loads,
+The token and LLM keys from `.env` are compiled into the JavaScript the browser loads,
 so anyone who can open the app can read them. Keep it on your machine. Before you deploy, move the
 secrets into a small backend that creates the session (`POST /api/v1/sessions`) and hands only the
 `sessionToken` / `controllerUrl` to the browser. The session routes don't need the token.

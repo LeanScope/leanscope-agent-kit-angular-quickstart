@@ -1,12 +1,17 @@
 // Runs the Angular CLI (`node scripts/run-ng.mjs serve`, `… build`, `… test`) on a Node.js version
 // it supports, so `npm start` works even when the active Node is too old. Uses the active Node when
 // it fits, else the newest fitting version installed with nvm, else explains what to install.
+//
+// For `serve` and `build` it also passes your secrets from `.env` to Angular as the build-time
+// constant LEANSCOPE_SECRETS (see src/environments/environment.ts). While `serve` runs, saving
+// `.env` restarts the dev server with the new values.
 
-import { spawnSync } from 'node:child_process';
-import { existsSync, readdirSync } from 'node:fs';
+import { spawn } from 'node:child_process';
+import { existsSync, readdirSync, watchFile } from 'node:fs';
 import { homedir } from 'node:os';
 import { delimiter, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { ENV_FILE, appSecrets, describeEnv, readEnvFile } from './sync-env.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const ng = join(root, 'node_modules', '@angular', 'cli', 'bin', 'ng.js');
@@ -59,5 +64,38 @@ if (!supported(process.version)) {
   console.log(`Using Node.js from ${bin} (the active ${process.version} is too old for Angular).`);
 }
 
-const result = spawnSync(node, [ng, ...process.argv.slice(2)], { stdio: 'inherit', env, cwd: root });
-process.exit(result.status ?? 1);
+const [command, ...rest] = process.argv.slice(2);
+const usesSecrets = command === 'serve' || command === 'build';
+
+function ngArgs() {
+  if (!usesSecrets) return [ng, command, ...rest];
+  const env = readEnvFile();
+  console.log(describeEnv(env));
+  return [ng, command, ...rest, '--define', `LEANSCOPE_SECRETS=${JSON.stringify(appSecrets(env))}`];
+}
+
+let child;
+let restarting = false;
+
+function run() {
+  child = spawn(node, ngArgs(), { stdio: 'inherit', env, cwd: root });
+  child.on('exit', (code, signal) => {
+    if (restarting) {
+      restarting = false;
+      run();
+      return;
+    }
+    process.exit(code ?? (signal ? 1 : 0));
+  });
+}
+
+run();
+for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => child.kill(signal));
+
+if (command === 'serve') {
+  watchFile(ENV_FILE, { interval: 1000 }, () => {
+    console.log('\n.env changed: restarting the dev server with the new values…');
+    restarting = true;
+    child.kill('SIGTERM');
+  });
+}

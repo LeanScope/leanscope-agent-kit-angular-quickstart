@@ -1,7 +1,7 @@
 import { InjectionToken, makeEnvironmentProviders, type EnvironmentProviders } from '@angular/core';
 import type { ApiKeyVendor } from './agent-server.types';
 
-/** The secrets part of the configuration (see `src/environments/environment.local.example.ts`). */
+/** The secrets part of the configuration (from `.env`, see `.env.example`). */
 export interface LeanScopeSecrets {
   /** LeanScope personal team-repos access token. Sent as `Authorization: Bearer …`. */
   accessToken: string;
@@ -41,11 +41,11 @@ export function missingConfig(config: LeanScopeConfig): string[] {
     missing.push('choreoScenarioGuid in src/environments/environment.ts');
   }
   if (!config.accessToken.trim()) {
-    missing.push('accessToken in src/environments/environment.local.ts');
+    missing.push('LEANSCOPE_PERSONAL_TEAM_REPOS_ACCESS_TOKEN in .env');
   }
   if (!LLM_VENDORS.some((vendor) => config.apiKeys[vendor]?.trim())) {
     missing.push(
-      'an OpenAI, Anthropic or Mistral key in apiKeys in src/environments/environment.local.ts',
+      'LEANSCOPE_OPENAI_API_KEY, LEANSCOPE_ANTHROPIC_API_KEY or LEANSCOPE_MISTRAL_API_KEY in .env',
     );
   }
   return missing;
