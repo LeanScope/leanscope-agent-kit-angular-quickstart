@@ -1,4 +1,4 @@
-// Your LeanScope secrets live in ONE place: the gitignored `.env` in the project root (names as in
+// Your LeanScope secrets (and the choreo guid) live in ONE place: the gitignored `.env` in the project root (names as in
 // `.env.example`, the same the LeanScope Agent Kit uses). They reach:
 //
 //   - the Angular app: `scripts/run-ng.mjs` passes them to `ng serve` / `ng build` as the
@@ -47,9 +47,16 @@ export function readEnvFile(file = ENV_FILE) {
   return values;
 }
 
-/** The secrets in the shape of `LeanScopeSecrets` (src/app/leanscope/leanscope.config.ts). */
+/** `.env` names the app uses besides the secrets. Not stored in the plugin. */
+const APP_SETTINGS = ['LEANSCOPE_CHOREO_SCENARIO_GUID'];
+
+/**
+ * The `.env` values for the app, in the shape of `LeanScopeEnv`
+ * (src/app/leanscope/leanscope.config.ts).
+ */
 export function appSecrets(env = readEnvFile()) {
   return {
+    choreoScenarioGuid: env['LEANSCOPE_CHOREO_SCENARIO_GUID'] ?? '',
     accessToken: env['LEANSCOPE_PERSONAL_TEAM_REPOS_ACCESS_TOKEN'] ?? '',
     apiKeys: {
       openai: env['LEANSCOPE_OPENAI_API_KEY'] ?? '',
@@ -64,10 +71,10 @@ export function appSecrets(env = readEnvFile()) {
 /** One line saying which names are set, for the console. Never a value. */
 export function describeEnv(env = readEnvFile()) {
   if (!existsSync(ENV_FILE)) {
-    return 'No .env yet: copy .env.example to .env and fill in your LeanScope token and an LLM key.';
+    return 'No .env yet: copy .env.example to .env and fill in your choreo guid, LeanScope token and an LLM key.';
   }
-  const set = SECRETS.filter((s) => env[s.env]).map((s) => s.env);
-  return `Secrets from .env: ${set.length ? set.join(', ') : 'none set'}.`;
+  const set = [...APP_SETTINGS, ...SECRETS.map((s) => s.env)].filter((name) => env[name]);
+  return `Values from .env: ${set.length ? set.join(', ') : 'none set'}.`;
 }
 
 /** The Claude Code CLI: `claude` on the PATH, else the one bundled with the VS Code extension. */

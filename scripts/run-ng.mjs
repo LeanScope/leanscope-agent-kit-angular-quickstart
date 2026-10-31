@@ -2,7 +2,7 @@
 // it supports, so `npm start` works even when the active Node is too old. Uses the active Node when
 // it fits, else the newest fitting version installed with nvm, else explains what to install.
 //
-// For `serve` and `build` it also passes your secrets from `.env` to Angular as the build-time
+// For `serve` and `build` it also passes your secrets and choreo guid from `.env` to Angular as the build-time
 // constant LEANSCOPE_SECRETS (see src/environments/environment.ts). While `serve` runs, saving
 // `.env` restarts the dev server with the new values.
 

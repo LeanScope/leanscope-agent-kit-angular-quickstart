@@ -9,11 +9,15 @@ export interface LeanScopeSecrets {
   apiKeys: Partial<Record<ApiKeyVendor, string>>;
 }
 
-export interface LeanScopeConfig extends LeanScopeSecrets {
+/** Everything the app reads from `.env`: the secrets plus the choreo to run. */
+export interface LeanScopeEnv extends LeanScopeSecrets {
+  /** The `_guid` of the choreo to run (LEANSCOPE_CHOREO_SCENARIO_GUID). */
+  choreoScenarioGuid: string;
+}
+
+export interface LeanScopeConfig extends LeanScopeEnv {
   /** Base URL of the LeanScope Agent Server, without `/api/v1`. */
   agentServerUrl: string;
-  /** The `_guid` of the choreo to run. */
-  choreoScenarioGuid: string;
   locale?: string;
 }
 
@@ -38,7 +42,7 @@ export function missingConfig(config: LeanScopeConfig): string[] {
     missing.push('agentServerUrl in src/environments/environment.ts');
   }
   if (!config.choreoScenarioGuid.trim()) {
-    missing.push('choreoScenarioGuid in src/environments/environment.ts');
+    missing.push('LEANSCOPE_CHOREO_SCENARIO_GUID in .env');
   }
   if (!config.accessToken.trim()) {
     missing.push('LEANSCOPE_PERSONAL_TEAM_REPOS_ACCESS_TOKEN in .env');

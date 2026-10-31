@@ -1,5 +1,13 @@
 # Release notes
 
+## 0.1.2 — 2026-10-31
+
+- **The choreo guid moved to `.env`.** Set `LEANSCOPE_CHOREO_SCENARIO_GUID` in `.env` instead of
+  `choreoScenarioGuid` in `src/environments/environment.ts`, so your choreo stays local and isn't
+  committed. `npm start` and `npm run build` pass it in with the secrets.
+  - **Update your `.env`:** add `LEANSCOPE_CHOREO_SCENARIO_GUID=<your choreo's _guid>`. Until then
+    the home page lists it as missing.
+
 ## 0.1.1 — 2026-10-30
 
 - **The question is no longer shown twice.** The answer form shows only the input; the question is

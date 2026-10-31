@@ -315,7 +315,7 @@ async function createErrorMessage(res: Response): Promise<string> {
     case 403:
       return `LeanScope did not accept the access token (${res.status}). Check LEANSCOPE_PERSONAL_TEAM_REPOS_ACCESS_TOKEN in .env. ${detail}`;
     case 404:
-      return `The choreo was not found (404). Check choreoScenarioGuid in src/environments/environment.ts. ${detail}`;
+      return `The choreo was not found (404). Check LEANSCOPE_CHOREO_SCENARIO_GUID in .env. ${detail}`;
     case 422:
       return `The agent server needs your own LLM key (422). Add an OpenAI, Anthropic or Mistral key to .env. ${detail}`;
     default:

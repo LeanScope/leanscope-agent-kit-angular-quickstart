@@ -33,7 +33,8 @@ conversation and renders a form for each question. Your MVP screens go on top of
 2. **Install:** `npm install`
 3. **Put your secrets into `.env`.** Copy `.env.example` to `.env` and fill in the token and an
    LLM key yourself, not through the agent. `.env` is gitignored and is the one place for them:
-   both the app and the coding agent's MCP servers use it.
+   both the app and the coding agent's MCP servers use it. Leave `LEANSCOPE_CHOREO_SCENARIO_GUID`
+   empty for now: your agent tells you its value in step 5.
 4. **Connect your coding agent.** Open the folder in Claude Code (CLI or the VS Code extension).
    `.claude/settings.json` enables the Agent Kit plugin.
    - Accept the plugin install when the session starts. (If it asks for the token, you can leave
@@ -47,7 +48,7 @@ conversation and renders a form for each question. Your MVP screens go on top of
 
    It follows [AGENTS.md](AGENTS.md):
    1. connect
-   2. pick or model a choreo, and write its guid into `src/environments/environment.ts`
+   2. pick or model a choreo, and tell you its guid for `LEANSCOPE_CHOREO_SCENARIO_GUID` in `.env`
    3. test-run it
    4. propose screens
    5. build them
@@ -57,12 +58,13 @@ conversation and renders a form for each question. Your MVP screens go on top of
 ## Project layout
 
 ```
-.env.example                   names of your secrets; copy to .env (gitignored) and fill in
+.env.example                   names of your secrets and the choreo guid; copy to .env
+                               (gitignored) and fill in
 .claude/settings.json          enables the LeanScope Agent Kit plugin for Claude Code
 AGENTS.md, CLAUDE.md           instructions and workflow for coding agents
 src/environments/
-  environment.ts               agent server URL, choreo guid, locale (committed); secrets from
-                               .env are added at build time
+  environment.ts               agent server URL, locale (committed); choreo guid and secrets
+                               from .env are added at build time
 src/app/leanscope/             the LeanScope client: keep it generic
   leanscope-session.service.ts   start a session, follow it, answer questions (signals)
   agent-server.types.ts          request/response and frame types of the Agent Server

@@ -27,9 +27,10 @@ you're on.
      enables it), then starts a new session.
 2. **Pick the choreo.** List the choreos in the repository and let the user pick one, or create one
    with the `model-a-choreo` skill when the user describes a new use case.
-3. **Configure the app.** Write the choreo's `_guid` into `choreoScenarioGuid` in
-   `src/environments/environment.ts`. Ask the user to copy `.env.example` to `.env` and fill in
-   their token and an LLM key themselves (see "Secrets").
+3. **Configure the app.** Ask the user to copy `.env.example` to `.env` and fill in the choreo's
+   `_guid` (`LEANSCOPE_CHOREO_SCENARIO_GUID`; give them the value), their token and an LLM key
+   themselves (see "Secrets"). Don't hardcode the guid in `src/environments/environment.ts`: it
+   depends on the user's repository.
 4. **Test-run it.** Run the choreo once with the `run-a-choreo` skill, so you and the user know
    what it asks and in which order before building screens.
 5. **Plan the MVP.** Read the Scenario, its ScenarioSteps, Personas and UserStories through
@@ -45,7 +46,7 @@ you're on.
 
 ## Secrets
 
-- The user's secrets live in `.env` only (names in `.env.example`). Never open, read, print or edit
+- The user's secrets and the choreo guid live in `.env` only (names in `.env.example`). Never open, read, print or edit
   `.env`, not even to check a value. If you need to know which names are set, run
   `node scripts/sync-env.mjs`: it lists names, never values. The home page of the running app also
   lists what's missing.
